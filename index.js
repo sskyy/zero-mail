@@ -1,60 +1,23 @@
-var config = require('./config')
+  nodemailer = require('nodemailer')
 
+module.exports = {
+  transporters : {},
+  expand : function( module ){
+    this.transporters[module.name] = nodemailer.createTransport( module.mail )
+  },
+  send : function( mailOptions){
+    var root = this
+    return new Promise(function( resolve, reject){
 
-var userModule = {
-  models : require('./models'),
-  listen : require('./listen')(config),
-  //this will allow app global config overwrite
-  config : config,
-  route : {
-    "/user/count" : function( req, res, next){
-      userModule.dep.model.models['user'].count().then(function(total){
-        res.json({count:total})
-      })
-    },
-    "*" : {
-      "function" : function initSession(req,res,next){
-        //TODO only for dev
-        if( !req.session.user ){
-          userModule.dep.model.models['user'].count().then(function(total){
-            var skip = parseInt( total * Math.random())
-            userModule.dep.model.models['user'].find({limit:1,skip:skip}).then(function(users){
-//              console.log("====================setting session user===========", users[0].name)
-//              req.session.user = users[0]
-              next()
-            }).catch(function(err){
-              ZERO.error(err)
-              next()
-            })
-          })
+      root.transporters[root.relier].sendMail(mailOptions, function(error, info){
+        if(error){
+          console.log(error);
+          reject()
         }else{
-          next()
+          console.log('Message sent: ' + info.response);
+          resolve(info)
         }
-
-
-
-
-        return
-
-//        if( req.session.user ){
-//          next()
-//        }else{
-//          //TODO only for dev
-//          userModule.dep.model.models['user'].find({limit:1}).then(function(users){
-//            req.session.user = users[0]
-//            next()
-//          }).catch(function(err){
-//            ZERO.error(err)
-//            next()
-//          })
-//        }
-
-      },
-      "order" : {first:true}
-    }
-
+      });
+    })
   }
 }
-
-module.exports = userModule
-
