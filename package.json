@@ -4,7 +4,7 @@
   "description" : "zero module",
   "zero" : {
     "dependencies" : {
-      "config":"zero-config^0.0.1"
+      "config":"zero-configure^0.0.2"
     }
   },
   "author" : "jiamiu"
