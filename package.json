@@ -4,7 +4,7 @@
   "description": "zero module",
   "zero": {
     "dependencies": {
-      "configuration": "^0.0.1"
+      "configure": "^0.0.1"
     },
     "name": "mail"
   },
